@@ -1,0 +1,27 @@
+# pyproject.toml
+[project]
+name = "gd2doc"
+version = "0.1.0"
+description = "Lightweight CLI that produces MkDocs-ready Markdown documentation from your Godot (gdscript) Project."
+readme = "README.md"
+authors = [
+  { name="Dein Name", email="du@example.com" }
+]
+license = { text = "MIT" }
+# Optional: Homepage, Repository, Keywords, Classifiers etc.
+
+[project.urls]
+"Homepage" = "https://github.com/Sprtacus/gd2doc"
+"Repository" = "https://github.com/Sprtacus/gd2doc"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = "^8.1"
+jinja2 = "^3.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"

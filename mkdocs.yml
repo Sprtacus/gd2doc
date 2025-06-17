@@ -1,0 +1,18 @@
+# mkdocs.yml
+site_name: gd2doc
+site_description: "Lightweight CLI that produces MkDocs-ready Markdown documentation from your Godot (gdscript) Project."
+repo_url: https://github.com/Sprtacus/gd2doc
+nav:
+  - Home: index.md
+  - Tutorial:
+      - "Getting Started": tutorial/getting_started.md
+theme:
+  name: material  # oder 'readthedocs', etc.
+docs_dir: docs
+site_dir: site
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+plugins:
+  - search
