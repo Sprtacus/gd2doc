@@ -91,7 +91,7 @@ def parse_gdscript(path: str) -> Dict[str, Any]:
 
     # header comments
     while index < len(lines) and lines[index].strip().startswith("#"):
-        comment = lines[index].strip()[1:].strip()
+        comment = lines[index].strip().lstrip("#").strip()
         if comment.lower().startswith("todo"):
             todos.append(comment[4:].strip())
         else:
@@ -113,7 +113,7 @@ def parse_gdscript(path: str) -> Dict[str, Any]:
         stripped = line.strip()
 
         if stripped.startswith("#"):
-            text = stripped[1:].strip()
+            text = stripped.lstrip("#").strip()
             if text.lower().startswith("todo"):
                 todos.append(text[4:].strip())
             else:

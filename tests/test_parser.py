@@ -98,3 +98,18 @@ def test_parse_advanced():
         ": constant to check",
         ": final todo",
     ]
+
+def test_parse_double_hash_comments():
+    gd_path = Path(__file__).parent / "data" / "double_hash.gd"
+    result = parser.parse_gdscript(str(gd_path))
+
+    script = result["script"]
+    assert script["short_description"] == "Example script"
+    assert script["description"] == "Example script\nAnother line"
+
+    assert len(result["functions"]) == 1
+    func = result["functions"][0]
+    assert func["name"] == "foo"
+    assert func["description"] == "Function description"
+
+    assert result["todos"] == [": header", ": bottom"]
