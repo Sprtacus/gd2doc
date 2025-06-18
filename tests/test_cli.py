@@ -101,3 +101,22 @@ def test_cli_indexes_intermediate_dirs(tmp_path):
     assert "b/index.md" in a_content
     b_content = (output / "a" / "b" / "index.md").read_text(encoding="utf-8")
     assert "deep.md" in b_content
+
+
+def test_cli_creates_mkdocs(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    output = tmp_path / "docs"
+
+    data_file = Path(__file__).parent / "data" / "basic.gd"
+    (source / "basic.gd").write_text(data_file.read_text(), encoding="utf-8")
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(main, [str(source), "-o", str(output)])
+        assert result.exit_code == 0
+
+        mkdocs_file = Path("mkdocs.yml")
+        assert mkdocs_file.exists()
+        content = mkdocs_file.read_text(encoding="utf-8")
+        assert "Codebase" in content
