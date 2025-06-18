@@ -31,3 +31,22 @@ def test_cli_recursive_option(tmp_path):
     assert (output2 / "basic.md").exists()
     assert (output2 / "sub" / "nested.md").exists()
 
+
+def test_cli_clean_option(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    output = tmp_path / "docs"
+    output.mkdir()
+
+    data_file = Path(__file__).parent / "data" / "basic.gd"
+    (source / "basic.gd").write_text(data_file.read_text(), encoding="utf-8")
+
+    leftover = output / "old.md"
+    leftover.write_text("old", encoding="utf-8")
+
+    runner = CliRunner()
+    result = runner.invoke(main, [str(source), "-o", str(output), "--clean"])
+    assert result.exit_code == 0
+    assert (output / "basic.md").exists()
+    assert not leftover.exists()
+
