@@ -97,3 +97,53 @@ def generate_indexes(gd_files: List[Path], base: Path, output_dir: Path) -> None
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(content, encoding="utf-8")
 
+
+def _nav_lines(directory: Path, root: Path, indent: int = 0) -> List[str]:
+    """Return YAML formatted nav lines for ``directory``."""
+
+    lines: List[str] = []
+
+    for subdir in sorted([p for p in directory.iterdir() if p.is_dir()]):
+        lines.append(" " * indent + f"- {subdir.name}:")
+        lines.append(
+            " " * (indent + 2)
+            + f"- Overview: {subdir.relative_to(root) / 'index.md'}"
+        )
+        lines.extend(_nav_lines(subdir, root, indent + 2))
+
+    for script in sorted([p for p in directory.glob("*.md") if p.name != "index.md"]):
+        lines.append(
+            " " * indent + f"- {script.stem}: {script.relative_to(root)}"
+        )
+
+    return lines
+
+
+def generate_mkdocs_yml(project_root: Path, docs_dir: Path) -> None:
+    """Create a ``mkdocs.yml`` next to ``project_root`` using ``docs_dir``."""
+
+    try:
+        docs_rel = docs_dir.relative_to(project_root)
+    except ValueError:
+        docs_rel = Path(os.path.relpath(docs_dir, project_root))
+
+    lines = [f"site_name: {project_root.name}", "nav:", "  - Home: index.md", "  - Codebase:"]
+    lines.extend(["    " + l for l in _nav_lines(docs_dir, docs_dir)])
+    lines.extend(
+        [
+            "theme:",
+            "  name: material",
+            f"docs_dir: {docs_rel}",
+            "site_dir: site",
+            "markdown_extensions:",
+            "  - admonition",
+            "  - toc:",
+            "      permalink: true",
+            "plugins:",
+            "  - search",
+            "",
+        ]
+    )
+
+    (project_root / "mkdocs.yml").write_text("\n".join(lines), encoding="utf-8")
+

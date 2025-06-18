@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 import shutil
 
 import click
@@ -43,7 +43,19 @@ def _collect_gd_files(root: Path, recursive: bool) -> List[Path]:
     default=False,
     help="Delete OUTPUT_DIR before generating new documentation.",
 )
-def main(source: Path, output_dir: Path, recursive: bool, clean: bool) -> None:
+@click.option(
+    "--project-root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="Root directory for mkdocs.yml. Defaults to parent of OUTPUT_DIR.",
+)
+def main(
+    source: Path,
+    output_dir: Path,
+    recursive: bool,
+    clean: bool,
+    project_root: Optional[Path],
+) -> None:
     """Generate documentation for all ``.gd`` files under ``SOURCE``."""
 
     gd_files = _collect_gd_files(source, recursive)
@@ -65,6 +77,9 @@ def main(source: Path, output_dir: Path, recursive: bool, clean: bool) -> None:
         click.echo(f"Generated {target.relative_to(output_dir)}")
 
     generator.generate_indexes(gd_files, base, output_dir)
+
+    root_dir = project_root or Path.cwd()
+    generator.generate_mkdocs_yml(root_dir, output_dir)
 
 
 if __name__ == "__main__":  # pragma: no cover - manual invocation
