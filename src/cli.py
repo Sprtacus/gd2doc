@@ -64,6 +64,8 @@ def main(source: Path, output_dir: Path, recursive: bool, clean: bool) -> None:
         generator.generate_markdown(data, str(target))
         click.echo(f"Generated {target.relative_to(output_dir)}")
 
+    generator.generate_indexes(gd_files, base, output_dir)
+
 
 if __name__ == "__main__":  # pragma: no cover - manual invocation
     main()

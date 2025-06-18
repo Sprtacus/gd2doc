@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 try:
     from jinja2 import Environment, FileSystemLoader
@@ -54,4 +54,46 @@ def generate_markdown(
     output_file.write_text(markdown, encoding="utf-8")
 
     return markdown
+
+
+def generate_indexes(gd_files: List[Path], base: Path, output_dir: Path) -> None:
+    """Generate ``index.md`` files for all directories.
+
+    Parameters
+    ----------
+    gd_files:
+        Collection of processed ``.gd`` files.
+    base:
+        Base directory relative to which ``gd_files`` are located.
+    output_dir:
+        Root directory for the generated Markdown files.
+    """
+
+    rel_files = [p.relative_to(base) for p in gd_files]
+    directories = {Path(".")}
+    for rel in rel_files:
+        directories.update(rel.parents)
+
+    # sort so parents are created before children
+    for directory in sorted(directories, key=lambda d: (len(d.parts), str(d))):
+        subdirs = sorted({d.name for d in directories if d.parent == directory})
+        scripts = sorted(
+            [p.with_suffix(".md").name for p in rel_files if p.parent == directory]
+        )
+
+        title = directory.name if directory != Path(".") else "Index"
+        lines = [f"# {title}"]
+        if subdirs:
+            lines.append("## Ordner")
+            for sd in subdirs:
+                lines.append(f"- [{sd}]({sd}/index.md)")
+        if scripts:
+            lines.append("## Skripte")
+            for s in scripts:
+                lines.append(f"- [{Path(s).stem}]({s})")
+
+        content = "\n".join(lines) + "\n"
+        out_path = output_dir / directory / "index.md"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(content, encoding="utf-8")
 
