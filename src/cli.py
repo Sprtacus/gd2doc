@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import List
+import shutil
 
 import click
 
@@ -37,13 +38,21 @@ def _collect_gd_files(root: Path, recursive: bool) -> List[Path]:
     default=False,
     help="Search SOURCE recursively for .gd files.",
 )
-def main(source: Path, output_dir: Path, recursive: bool) -> None:
+@click.option(
+    "--clean/--no-clean",
+    default=False,
+    help="Delete OUTPUT_DIR before generating new documentation.",
+)
+def main(source: Path, output_dir: Path, recursive: bool, clean: bool) -> None:
     """Generate documentation for all ``.gd`` files under ``SOURCE``."""
 
     gd_files = _collect_gd_files(source, recursive)
     if not gd_files:
         click.echo("No .gd files found.")
         return
+
+    if clean and output_dir.exists():
+        shutil.rmtree(output_dir)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
