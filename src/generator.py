@@ -132,7 +132,7 @@ def generate_mkdocs_yml(project_root: Path, docs_dir: Path) -> None:
     lines.extend(
         [
             "theme:",
-            "  name: material",
+            "  name: readthedocs",
             f"docs_dir: {docs_rel}",
             "site_dir: site",
             "markdown_extensions:",
