@@ -1,3 +1,5 @@
+⚠️ This Repro is still under construction and not ready for use ⚠️
+
 # gd2doc
 
 `gd2doc` is a small command line tool that parses GDScript files and produces Markdown that can be fed directly into MkDocs.
